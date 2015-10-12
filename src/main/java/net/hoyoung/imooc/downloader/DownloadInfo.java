@@ -20,12 +20,33 @@ public class DownloadInfo {
     //分成多少段下载， 每一段用一个线程完成下载
     private int splitter;
     
+    private long length;
+    
     //下载文件默认保存路径
     private final static String FILE_PATH = "C:/temp";
     //默认分块数、线程数
     private final static int SPLITTER_NUM = 5;
     
-    public DownloadInfo() {
+    private int progress = 0;
+    
+    
+    public long getLength() {
+		return length;
+	}
+
+	public void setLength(long length) {
+		this.length = length;
+	}
+
+	public int getProgress() {
+		return progress;
+	}
+
+	public void setProgress(int progress) {
+		this.progress = progress;
+	}
+
+	public DownloadInfo() {
         super();
     }
     
@@ -106,9 +127,12 @@ public class DownloadInfo {
     public void setSplitter(int splitter) {
         this.splitter = (splitter < 1) ? SPLITTER_NUM : splitter;
     }
+
+	@Override
+	public String toString() {
+		return "DownloadInfo [fileName=" + fileName + ", progress=" + progress
+				+ "]";
+	}
     
-    @Override
-    public String toString() {
-        return this.url + "#" + this.fileName + "#" + this.filePath + "#" + this.splitter;
-    }
+    
 }

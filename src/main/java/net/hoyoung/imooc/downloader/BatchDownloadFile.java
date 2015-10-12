@@ -54,13 +54,17 @@ public class BatchDownloadFile implements Runnable {
     //临时文件信息
     private File tempFile;
     
-    private ConsoleProgressBar consoleProgressBar;//控制台进度条
     
     public BatchDownloadFile(DownloadInfo downloadInfo) {
         this.downloadInfo = downloadInfo;
+        
+        File filePathDir = new File(this.downloadInfo.getFilePath());
+        if(!filePathDir.exists()){//创建目录
+        	filePathDir.mkdir();
+        }
+        
         String tempPath = this.downloadInfo.getFilePath() + File.separator + downloadInfo.getFileName() + ".position";
         tempFile = new File(tempPath);
-        consoleProgressBar = new ConsoleProgressBar(0, 100, 20, '=',">"+this.downloadInfo.getFileName());//前缀为文件名
         //如果存在读入点位置的文件
         if (tempFile.exists()) {
             first = false;
@@ -76,14 +80,13 @@ public class BatchDownloadFile implements Runnable {
             endPos = new long[downloadInfo.getSplitter()];
         }
     }
-    
     @Override
     public void run() {
         //首次下载，获取下载文件长度
         if (first) {
             length = this.getFileSize();//获取文件长度
-            System.out.print("开始下载 "+this.downloadInfo.getFileName());
-            System.out.print("，"+(this.length/1024/1024)+"M");
+            downloadInfo.setLength(this.length);
+            System.out.println();
             if (length == -1) {
                 logger.info("file length is know!");
                 stop = true;
@@ -154,6 +157,7 @@ public class BatchDownloadFile implements Runnable {
                     }
                 }
             }
+            this.downloadInfo.setProgress(100);
             //任务完成
             logger.info("Download task is finished!");
             //删除记录信息
@@ -191,7 +195,7 @@ public class BatchDownloadFile implements Runnable {
         //输出总的下载进度
         int progress = (int) Math.round(completeLength*1.0/this.length*100);//0~100
         logger.info("下载进度:"+progress);
-        consoleProgressBar.show(progress);
+        this.downloadInfo.setProgress(progress);//设置下载进度
     }
     
     /**
@@ -217,6 +221,7 @@ public class BatchDownloadFile implements Runnable {
         dis.close();
         //恢复length，用于恢复显示进度
         this.length = this.endPos[this.endPos.length-1];
+        downloadInfo.setLength(this.length);
     }
     
     /**

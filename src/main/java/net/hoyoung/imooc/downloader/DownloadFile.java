@@ -67,9 +67,9 @@ public class DownloadFile extends Thread {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 
                 // 设置连接超时时间为10000ms
-                conn.setConnectTimeout(10000);
+                conn.setConnectTimeout(100000);
                 // 设置读取数据超时时间为10000ms
-                conn.setReadTimeout(10000);
+                conn.setReadTimeout(100000);
                 
                 setHeader(conn);
                 

@@ -1,6 +1,7 @@
 package net.hoyoung.imooc.downloader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
@@ -13,12 +14,14 @@ import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.hoyoung.Spider;
+import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.JsonPathSelector;
 import us.codecraft.webmagic.selector.Selectable;
 
 public class ImoocDownloader {
+	private static int THREAD_NUM = 5;
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	private Vector<VideoItem> videoItems;//视频列表
 	private String courseName;//课程名称
@@ -43,7 +46,10 @@ public class ImoocDownloader {
 		this.videoType = videoType;
 	}
 	public void start(){
+		List<Pipeline> pipelines = new ArrayList<Pipeline>();
+		pipelines.add(new MyPipeline());
 		Spider.create(new VideoItemPageProcessor())
+		.setPipelines(pipelines)
 		.addUrl(this.targetUrl)
 		.thread(1)
 		.run();
@@ -74,6 +80,7 @@ public class ImoocDownloader {
 		}else{
 			System.out.println("目录 "+this.courseName+" 已存在");
 		}
+		List<DownloadInfo> tasks = new ArrayList<DownloadInfo>();
 		for (VideoItem videoItem : videoItems) {
 			String downloadUrl = null;
 			if(this.videoType==1){
@@ -85,12 +92,21 @@ public class ImoocDownloader {
 			}
 			String ext =downloadUrl.substring(downloadUrl.lastIndexOf("."));
 			String fileName = videoItem.getName()+ext;
-			DownloadUtils.download(downloadUrl, fileName, this.courseName, 5);
+			DownloadInfo bean = new DownloadInfo(downloadUrl, fileName, this.courseName, THREAD_NUM);
+			tasks.add(bean);
 		}
-//		System.out.println("课程 "+this.courseName+" 下载完成");
+		new DownloadScheduler(tasks).start();;
+		System.out.println("课程 "+this.courseName+" 下载完成");
 	}
 
 	public static void main(String[] args) {
+		System.out.println("####################################################");
+		System.out.println("#慕课网视频下载器 made by hoyoung");
+		System.out.println("#到慕课网官网打开想要下载的课程的章节列表页面，查看当前url链接");
+		System.out.println("#例如http://www.imooc.com/learn/414，则课程编号为414");
+		System.out.println("####################################################");
+		
+		
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("输入要下载的课程编号：");
 		int courseId = scanner.nextInt();
