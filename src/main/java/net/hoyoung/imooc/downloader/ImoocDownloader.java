@@ -1,6 +1,7 @@
 package net.hoyoung.imooc.downloader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -70,8 +71,7 @@ public class ImoocDownloader {
 			System.out.println(">"+videoItem.getName());
 			logger.info(">"+videoItem.getName());
 		}
-		
-		//创建目录
+        //创建目录
 		
 		File file = new File(this.courseName);
 		if(!file.exists()){

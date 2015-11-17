@@ -82,6 +82,7 @@ public class BatchDownloadFile implements Runnable {
     }
     @Override
     public void run() {
+        downloadInfo.setDownloading(true);
         //首次下载，获取下载文件长度
         if (first) {
             length = this.getFileSize();//获取文件长度

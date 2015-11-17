@@ -28,8 +28,17 @@ public class DownloadInfo {
     private final static int SPLITTER_NUM = 5;
     
     private int progress = 0;
-    
-    
+
+    private boolean downloading = false;
+
+    public boolean isDownloading() {
+        return downloading;
+    }
+
+    public void setDownloading(boolean downloading) {
+        this.downloading = downloading;
+    }
+
     public long getLength() {
 		return length;
 	}

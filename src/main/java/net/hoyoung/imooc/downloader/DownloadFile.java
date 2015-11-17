@@ -81,8 +81,12 @@ public class DownloadFile extends Thread {
                 //printHeader(conn);
                 
                 //获取文件输入流，读取文件内容
-                InputStream is = conn.getInputStream();
-                
+                InputStream is0 = conn.getInputStream();
+
+                //加入网速控制
+                DownloadLimiter is = new DownloadLimiter(is0,new BandwidthLimiter(100000));
+
+
                 byte[] buff = new byte[BUFF_LENGTH];
                 int length = -1;
                 logger.info("#start#Thread: " + threadId + ", startPos: " + startPos + ", endPos: " + endPos);

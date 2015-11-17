@@ -24,14 +24,15 @@ public class DownloadScheduler {
 		super();
 	}
 
+    int initTaskSize = 0;
 	public void setTasks(List<DownloadInfo> tasks) {
 		this.tasks = tasks;
-
+        this.initTaskSize = tasks.size();
 	}
-
+    private ThreadPoolExecutor threadPool;
 	public void start() {
 		// 构造一个线程池
-		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3, 100, 3,
+		threadPool = new ThreadPoolExecutor(1, 3, 1000,
 				TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3),
 				new ThreadPoolExecutor.DiscardOldestPolicy());
 
@@ -54,14 +55,21 @@ public class DownloadScheduler {
 	public DownloadScheduler(List<DownloadInfo> tasks) {
 		super();
 		this.tasks = tasks;
+        this.initTaskSize = tasks.size();
 	}
 
 	private void printProgress(){
 		StringBuffer sb = new StringBuffer();
 		
 		Iterator<DownloadInfo> ite = tasks.iterator();
-		while(ite.hasNext()){
+
+        System.out.println("完成量："+(initTaskSize-tasks.size())+" / "+initTaskSize);
+        while(ite.hasNext()){
 			DownloadInfo downloadInfo = ite.next();
+            if(!downloadInfo.isDownloading()){
+                continue;
+            }
+
 			sb.append("|");
 			int now = downloadInfo.getProgress()/5;
 			for (int i = 1; i <= 20; i++) {
@@ -83,7 +91,7 @@ public class DownloadScheduler {
 				ite.remove();
 			}
 		}
-		System.out.print(sb.toString());
+        System.out.print(sb.toString());
 		System.out.println();
 	}
 	public static void main(String[] args) {
