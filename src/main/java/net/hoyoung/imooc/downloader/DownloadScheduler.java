@@ -66,7 +66,7 @@ public class DownloadScheduler {
         System.out.println("完成量："+(initTaskSize-tasks.size())+" / "+initTaskSize);
         while(ite.hasNext()){
 			DownloadInfo downloadInfo = ite.next();
-            if(!downloadInfo.isDownloading()){
+            if(!downloadInfo.isDownloading() || downloadInfo.getProgress()==0){
                 continue;
             }
 

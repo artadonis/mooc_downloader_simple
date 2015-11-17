@@ -2,10 +2,7 @@ package net.hoyoung.imooc.downloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 import net.hoyoung.imooc.downloader.model.VideoItem;
 
@@ -46,33 +43,35 @@ public class ImoocDownloader {
 		this(targetUrl);
 		this.videoType = videoType;
 	}
-	public void start(){
-		List<Pipeline> pipelines = new ArrayList<Pipeline>();
-		pipelines.add(new MyPipeline());
-		Spider.create(new VideoItemPageProcessor())
-		.setPipelines(pipelines)
-		.addUrl(this.targetUrl)
-		.thread(1)
-		.run();
-		System.out.println("课程名称：【"+this.courseName+"】");
-		logger.info("共获取"+videoItems.size()+"条视频信息，准备提取下载地址......");
-		System.out.println("共获取"+videoItems.size()+"条视频信息，准备提取下载地址......");
-		Spider spider = Spider.create(new VideoItemFileUrlPageProcessor());
-		
-		for (VideoItem videoItem : videoItems) {
-			Request req = new Request(DOWN_URL.replace("{mid}", videoItem.getMid()));
-			req.putExtra("videoItem", videoItem);
-			spider.addRequest(req);
-		}
-		spider.thread(5).run();
-		logger.info("下载地址提取完成，共"+this.videoItems.size()+"条视频：");
-		System.out.println("下载地址提取完成，共"+this.videoItems.size()+"条视频：");
-		for (VideoItem videoItem : videoItems) {
-			System.out.println(">"+videoItem.getName());
-			logger.info(">"+videoItem.getName());
-		}
+    public void parseCourse(){
+        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        pipelines.add(new MyPipeline());
+        Spider.create(new VideoItemPageProcessor())
+                .setPipelines(pipelines)
+                .addUrl(this.targetUrl)
+                .thread(1)
+                .run();
+        System.out.println("课程名称：【"+this.courseName+"】");
+        logger.info("共获取"+videoItems.size()+"条视频信息，准备提取下载地址......");
+        System.out.println("共获取"+videoItems.size()+"条视频信息，准备提取下载地址......");
+        Spider spider = Spider.create(new VideoItemFileUrlPageProcessor());
+
+        for (VideoItem videoItem : videoItems) {
+            Request req = new Request(DOWN_URL.replace("{mid}", videoItem.getMid()));
+            req.putExtra("videoItem", videoItem);
+            spider.addRequest(req);
+        }
+        spider.thread(5).run();
+        logger.info("下载地址提取完成，共"+this.videoItems.size()+"条视频：");
+        System.out.println("下载地址提取完成，共"+this.videoItems.size()+"条视频：");
+        for (VideoItem videoItem : videoItems) {
+            System.out.println(videoItem.getName());
+            logger.info(">"+videoItem.getName());
+        }
+    }
+	public void start(int videoType){
+        this.videoType = videoType;
         //创建目录
-		
 		File file = new File(this.courseName);
 		if(!file.exists()){
 			System.out.println("创建目录 "+this.courseName);
@@ -110,16 +109,22 @@ public class ImoocDownloader {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("输入要下载的课程编号：");
 		int courseId = scanner.nextInt();
-		System.out.print("选择清晰度（1：超清UHD，2：高清HD，3：普清SD）：");
-		
-		int videoType = scanner.nextInt();
-		if(videoType!=1 && videoType!=2 && videoType!=3){
-			System.err.println("输入有误");
-			System.exit(0);
-		}
-		scanner.close();
+
+
 		System.out.println("正在解析课程信息，请稍等......");
-		new ImoocDownloader("http://www.imooc.com/learn/"+courseId,videoType).start();
+
+        ImoocDownloader imoocDownloader = new ImoocDownloader("http://www.imooc.com/learn/"+courseId);
+        //解析课程列表
+        imoocDownloader.parseCourse();
+
+        System.out.print("选择清晰度（1：超清UHD，2：高清HD，3：普清SD）：");
+        int videoType = scanner.nextInt();
+        if(videoType!=1 && videoType!=2 && videoType!=3){
+            System.err.println("输入有误");
+            System.exit(0);
+        }
+        scanner.close();
+        imoocDownloader.start(videoType);
 	}
 	
 	//获取视频信息内部类
