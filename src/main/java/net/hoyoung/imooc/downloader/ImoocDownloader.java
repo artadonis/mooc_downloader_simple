@@ -95,7 +95,7 @@ public class ImoocDownloader {
 			DownloadInfo bean = new DownloadInfo(downloadUrl, fileName, this.courseName, THREAD_NUM);
 			tasks.add(bean);
 		}
-		new DownloadScheduler(tasks).start();;
+		new DownloadScheduler(tasks).start();
 		System.out.println("课程 "+this.courseName+" 下载完成");
 	}
 
