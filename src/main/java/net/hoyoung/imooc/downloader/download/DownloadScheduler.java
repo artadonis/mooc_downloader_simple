@@ -1,4 +1,6 @@
-package net.hoyoung.imooc.downloader;
+package net.hoyoung.imooc.downloader.download;
+
+import net.hoyoung.imooc.downloader.model.DownloadInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,23 +32,27 @@ public class DownloadScheduler {
         this.initTaskSize = tasks.size();
 	}
     private ThreadPoolExecutor threadPool;
+    private void sleep(long mills){
+        try {
+            Thread.sleep(mills);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 	public void start() {
 		// 构造一个线程池
-		threadPool = new ThreadPoolExecutor(1, 3, 1000,
-				TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3),
+		threadPool = new ThreadPoolExecutor(3, 5, 1000,
+				TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000),
 				new ThreadPoolExecutor.DiscardOldestPolicy());
 
 		for (DownloadInfo downloadInfo : tasks) {
 			BatchDownloadFile down = new BatchDownloadFile(downloadInfo);
 			threadPool.execute(down);
+            sleep(100);
 		}
 		while (threadPool.getActiveCount() > 0) {// 打印进度
 			printProgress();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+            sleep(1000);
 		}
 		printProgress();
 		threadPool.shutdown();
@@ -58,24 +64,22 @@ public class DownloadScheduler {
         this.initTaskSize = tasks.size();
 	}
 
+    /**
+     * 打印进度
+     */
 	private void printProgress(){
 		StringBuffer sb = new StringBuffer();
-		
 		Iterator<DownloadInfo> ite = tasks.iterator();
-
-        System.out.println("完成量："+(initTaskSize-tasks.size())+" / "+initTaskSize);
         while(ite.hasNext()){
 			DownloadInfo downloadInfo = ite.next();
-            if(!downloadInfo.isDownloading() || downloadInfo.getProgress()==0){
+            if(!downloadInfo.isDownloading()){
                 continue;
             }
-
+            sb.setLength(0);//清空
 			sb.append("|");
 			int now = downloadInfo.getProgress()/5;
 			for (int i = 1; i <= 20; i++) {
 				if(i<=now){
-					//">"
-					//"="
 					sb.append(">");
 				}else{
 					sb.append("=");
@@ -85,14 +89,13 @@ public class DownloadScheduler {
 			sb.append(downloadInfo.getProgress() + "% ");// 进度值
 			sb.append((downloadInfo.getLength()/1024/1024)+"M ");
 			sb.append(downloadInfo.getFileName());// 名称
-			sb.append("\n");
 			
 			if(downloadInfo.getProgress()==100){
 				ite.remove();
 			}
+            System.out.println(sb.toString());
 		}
-        System.out.print(sb.toString());
-		System.out.println();
+        System.out.println("完成量："+(initTaskSize-tasks.size())+" / "+initTaskSize);
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

@@ -1,4 +1,4 @@
-package net.hoyoung.imooc.downloader;
+package net.hoyoung.imooc.downloader.download;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

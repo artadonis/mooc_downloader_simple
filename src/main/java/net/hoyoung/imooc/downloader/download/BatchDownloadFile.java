@@ -1,4 +1,4 @@
-package net.hoyoung.imooc.downloader;
+package net.hoyoung.imooc.downloader.download;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,21 +10,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.hoyoung.imooc.downloader.download.DownloadFile;
+import net.hoyoung.imooc.downloader.model.DownloadInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-/**
- * <b>function:</b> 分批量下载文件
- * @author hoojo
- * @createDate 2011-9-22 下午05:51:54
- * @file BatchDownloadFile.java
- * @package com.hoo.download
- * @project MultiThreadDownLoad
- * @blog http://blog.csdn.net/IBM_hoojo
- * @email hoojo_@126.com
- * @version 1.0
- */
 public class BatchDownloadFile implements Runnable {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
     //下载文件信息 
@@ -87,7 +78,6 @@ public class BatchDownloadFile implements Runnable {
         if (first) {
             length = this.getFileSize();//获取文件长度
             downloadInfo.setLength(this.length);
-            System.out.println();
             if (length == -1) {
                 logger.info("file length is know!");
                 stop = true;

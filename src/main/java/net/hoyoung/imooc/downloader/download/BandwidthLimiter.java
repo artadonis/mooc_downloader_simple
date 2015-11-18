@@ -1,4 +1,4 @@
-package net.hoyoung.imooc.downloader;
+package net.hoyoung.imooc.downloader.download;
 
 public class BandwidthLimiter {
      private static Long KB = 1024l;

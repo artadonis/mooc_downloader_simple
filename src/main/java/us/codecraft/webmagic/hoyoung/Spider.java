@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import net.hoyoung.imooc.downloader.MyPipeline;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpHost;
@@ -291,9 +290,6 @@ public class Spider implements Runnable, Task {
     protected void initComponent() {
         if (downloader == null) {
             this.downloader = new HttpClientDownloader();
-        }
-        if (pipelines.isEmpty()) {
-            pipelines.add(new MyPipeline());
         }
         downloader.setThread(threadNum);
         if (threadPool == null || threadPool.isShutdown()) {

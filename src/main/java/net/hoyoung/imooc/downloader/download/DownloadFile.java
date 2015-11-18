@@ -1,4 +1,4 @@
-package net.hoyoung.imooc.downloader;
+package net.hoyoung.imooc.downloader.download;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,14 +13,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <b>function:</b> 单线程下载文件
- * @author hoojo
- * @createDate 2011-9-22 下午02:55:10
- * @file DownloadFile.java
- * @package com.hoo.download
- * @project MultiThreadDownLoad
- * @blog http://blog.csdn.net/IBM_hoojo
- * @email hoojo_@126.com
- * @version 1.0
  */
 public class DownloadFile extends Thread {
 	protected static Logger logger = LoggerFactory.getLogger(DownloadFile.class);
@@ -84,7 +76,7 @@ public class DownloadFile extends Thread {
                 InputStream is0 = conn.getInputStream();
 
                 //加入网速控制
-                DownloadLimiter is = new DownloadLimiter(is0,new BandwidthLimiter(100000));
+                DownloadLimiter is = new DownloadLimiter(is0,new BandwidthLimiter(0));
 
 
                 byte[] buff = new byte[BUFF_LENGTH];

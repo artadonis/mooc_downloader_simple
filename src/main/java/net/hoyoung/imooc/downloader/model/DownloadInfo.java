@@ -1,15 +1,4 @@
-package net.hoyoung.imooc.downloader;
-/**
- * <b>function:</b> 下载文件信息类
- * @author hoojo
- * @createDate 2011-9-21 下午05:14:58
- * @file DownloadInfo.java
- * @package com.hoo.entity
- * @project MultiThreadDownLoad
- * @blog http://blog.csdn.net/IBM_hoojo
- * @email hoojo_@126.com
- * @version 1.0
- */
+package net.hoyoung.imooc.downloader.model;
 public class DownloadInfo {
     //下载文件url
     private String url;
