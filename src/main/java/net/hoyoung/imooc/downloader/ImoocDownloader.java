@@ -28,7 +28,7 @@ public class ImoocDownloader {
 	private String targetUrl;
     private static Map<Integer,String> VIDEO_TYPE;
     static {
-        VIDEO_TYPE = new HashMap<>();
+        VIDEO_TYPE = new HashMap<Integer,String>();
         VIDEO_TYPE.put(1,"UHD");
         VIDEO_TYPE.put(2, "HD");
         VIDEO_TYPE.put(3, "SD");
