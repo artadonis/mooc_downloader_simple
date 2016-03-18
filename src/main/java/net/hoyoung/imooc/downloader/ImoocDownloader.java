@@ -101,6 +101,13 @@ public class ImoocDownloader {
                 String downloadUrl = (String)method.invoke(videoItem);
 
                 String ext =downloadUrl.substring(downloadUrl.lastIndexOf("."));
+
+				String authKey = "?auth_key";
+				if(ext.contains(authKey)){
+					ext = ext.substring(0,ext.indexOf(authKey));
+				}
+
+
                 String fileName = videoItem.getName()+ext;
                 DownloadInfo bean = new DownloadInfo(downloadUrl, fileName, this.courseName, THREAD_NUM);
                 tasks.add(bean);
@@ -179,9 +186,10 @@ public class ImoocDownloader {
 		public void process(Page page) {
 			List<String> medias = new JsonPathSelector("$.data.result.mpath").selectList(page.getRawText());
 			VideoItem videoItem = (VideoItem) page.getRequest().getExtra("videoItem");
-			videoItem.setFileUrlUHD(medias.get(0));
+			//新改版的对顺序做了调整
+			videoItem.setFileUrlUHD(medias.get(2));
 			videoItem.setFileUrlHD(medias.get(1));
-			videoItem.setFileUrlSD(medias.get(2));
+			videoItem.setFileUrlSD(medias.get(0));
 		}
 		private Site site = Site.me().setRetryTimes(10).setSleepTime(100);
 		@Override
